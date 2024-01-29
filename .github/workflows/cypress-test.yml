@@ -24,6 +24,7 @@ jobs:
       - uses: cypress-io/github-action@v6
         with:
           browser: chrome
+          # config: /path/to/your/cypress.config.js
 
       # - name: Check out code
       #   uses: actions/checkout@v3
