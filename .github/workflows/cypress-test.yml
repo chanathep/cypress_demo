@@ -1,0 +1,43 @@
+name: Cypress Tests on Google
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to match your desired trigger branch
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:latest
+      options: --user 1001
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+
+      # - name: Check out code
+      #   uses: actions/checkout@v3
+
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 16  # Adjust this to match your Cypress requirements
+
+      # - name: Install Cypress dependencies
+      #   run: npm install  # Or use yarn
+
+      # - name: Run Cypress tests
+      #   uses: cypress-io/github-action@v4
+      #   with:
+      #     start: npm run cy:run  # Or use yarn cy:run
+      #     record: false  # Set to true if recording new tests
+
+      # - name: Upload test results (optional)
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: cypress-test-results
+      #     path: cypress/videos/*.mp4  # Adjust the path as needed
