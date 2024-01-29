@@ -5,6 +5,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // Add custom event listeners if needed
     },
+    supportFile: false, //If a support file is not necessary for your project, set supportFile to false.
     baseUrl: 'https://www.google.com', // Replace with your base URL
     specPattern: 'cypress/integration/**/*.{js,jsx,ts,tsx}', // Adjust the pattern if needed
     excludeSpecPattern: [], // Exclude specific specs if necessary
