@@ -15,6 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Initialize and Install Dependencies
+        run: |
+          npm init -y
+          npm install
+
       - uses: cypress-io/github-action@v6
         with:
           browser: chrome
