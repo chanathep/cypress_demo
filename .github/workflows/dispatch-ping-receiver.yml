@@ -1,0 +1,44 @@
+name: Remote Dispatch Action Initiator
+
+on:
+  push:
+  # schedule:
+  #   - cron: '0 12 * * *'
+  # # every day at 12:00
+  repository_dispatch:
+
+jobs:
+  ping-pong:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PING - send out PING
+        # if: github.event.action != 'pong'
+        if: github.event.action != 'pong' && github.event.action != 'ping'
+        # runs on any push and any action except PONG
+        # ${{ secrets.TOKEN_KEY }}
+        # ${{ secrets.PAT }}
+        run: |
+          echo "Start with action '${{ github.event.action }}'" && \
+          curl -X POST https://api.github.com/repos/chanathep/cypress_demo/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.TOKEN_KEY }} \
+          --data '{"event_type": "ping", "client_payload": { "message": "Ping from '"$GITHUB_REPOSITORY"'" }}'
+      - name: PING - PONG
+        if: github.event.action == 'ping'
+        run: |
+          echo "Received PING message '${{ github.event.client_payload.repository }}'" && \
+          curl -X POST https://api.github.com/repos/chanathep/cypress_demo/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.TOKEN_KEY }} \
+          --data '{"event_type": "pong", "client_payload": { "message": "Pong from '"$GITHUB_REPOSITORY"'" }}'
+      - name: PONG - ACK
+        if: github.event.action == 'pong'
+        run: |
+          echo "Received PONG message '${{ github.event.client_payload.repository }}'" && \
+          curl -X POST https://api.github.com/repos/chanathep/cypress_demo/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.TOKEN_KEY }} \
+          --data '{"event_type": "ack", "client_payload": { "message": "Ack from '"$GITHUB_REPOSITORY"'" }}'
+      - name: ACK
+        run: |
+          echo "Received ACK message '${{ github.event.client_payload.repository }}'"
