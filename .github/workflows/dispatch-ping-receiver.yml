@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: PING - send out PING
         # if: github.event.action != 'pong'
-        if: github.event.action != 'pong' && github.event.action != 'ping'
+        if: github.event.action != 'ping' && github.event.action != 'pong' && github.event.action != 'ack'
         # runs on any push and any action except PONG
         # ${{ secrets.TOKEN_KEY }}
         # ${{ secrets.PAT }}
