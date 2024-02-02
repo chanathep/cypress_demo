@@ -1,10 +1,15 @@
-name: Remote Dispatch Action Initiator
+name: Dispatch
 
 on:
-  push:
+  # push:
   # schedule:
   #   - cron: '0 12 * * *'
   # # every day at 12:00
+  workflow_run:
+    workflows:
+      - Cypress_Tests
+    types:
+      - completed
   repository_dispatch:
 
 jobs:
@@ -41,5 +46,6 @@ jobs:
           -u ${{ secrets.TOKEN_KEY }} \
           --data '{"event_type": "ack", "client_payload": { "message": "Ack from '"$GITHUB_REPOSITORY"'" }}'
       - name: ACK
+        if: github.event.action == 'ack'
         run: |
           echo "Received ACK message '${{ github.event.client_payload.repository }}'"
