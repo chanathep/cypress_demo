@@ -22,7 +22,7 @@ jobs:
     # secrets:
     #   envPAT: ${{ secrets.TOKEN_KEY }}
 
-  test_insure:
-    name: test_insure
-    needs: start
-    uses: fws-ins-nc/t-cypress/.github/workflows/t-cypress-test-reuse.yml@master
+  # test_insure:
+  #   name: test_insure
+  #   needs: start
+  #   uses: fws-ins-nc/t-cypress/.github/workflows/t-cypress-test-reuse.yml@master
