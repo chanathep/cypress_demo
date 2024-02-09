@@ -34,7 +34,7 @@ jobs:
         run: |
           cd repo
           ls -la
-          tar -czf ${{ github.event.repository.name }}.tar.gz .
+          tar -czf ${{ github.event.repository.name }}.tar.gz ${{ github.event.repository.name }}.git
           ls -la
           # git archive --format=tar.gz --prefix=my-repo/ HEAD > my-repo.tar.gz
           # gzip -d my-repo.tar.gz
