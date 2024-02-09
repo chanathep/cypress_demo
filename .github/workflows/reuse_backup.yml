@@ -1,0 +1,39 @@
+name: Backup Repo
+
+on:
+  push:
+    branches:
+      - main
+  workflow_call:
+
+jobs:
+  backup:
+    name: backup
+    # runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
+    steps:
+
+      # - name: Clean up old temp folder
+      #   run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork .sonarqube */bin */obj
+
+      # - uses: actions/checkout@v4
+      #   with:
+      #     token: ${{ secrets.TOKEN_KEY }}
+      #     submodules: "recursive"
+
+
+      - name: Clone Repository
+        run: git clone --mirror ${{ github.repository }} /tmp/repo
+
+      - name: Create Zip Archive
+        run: |
+          cd /tmp/repo
+          git archive --format=tar.gz --prefix=my-repo/ HEAD > my-repo.tar.gz
+          gzip -d my-repo.tar.gz
+          mv my-repo.tar my-repo.zip
+
+      - name: List Zipped File Contents
+        run: unzip -l /tmp/repo/my-repo.zip
+
+      # - name: Clean up old temp folder
+      #   run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork .sonarqube */bin */obj
