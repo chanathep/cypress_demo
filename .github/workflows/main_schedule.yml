@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: echo a
         run: |
-          echo "a"
+          echo "a at ${{ github.event.schedule }}"
 
   job_b:
     name: Job B (Quarterly)
@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: echo b
         run: |
-          echo "b"
+          echo "b at ${{ github.event.schedule }}"
 
   job_c:
     name: Job C (35 minutes of every hour)
@@ -29,4 +29,4 @@ jobs:
     steps:
       - name: echo c
         run: |
-          echo "c"
+          echo "c at ${{ github.event.schedule }}"
