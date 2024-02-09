@@ -1,0 +1,32 @@
+name: My Scheduled Workflow
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  job_a:
+    name: Job A
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo a
+        run: |
+          echo "a"
+
+  job_b:
+    name: Job B (Quarterly)
+    runs-on: ubuntu-latest
+    if: ${{ github.event.schedule == '0 0 1 1,4,7,10 *' }}  # Quarterly schedule
+    steps:
+      - name: echo b
+        run: |
+          echo "b"
+
+  job_c:
+    name: Job C (35 minutes of every hour)
+    runs-on: ubuntu-latest
+    if: ${{ github.event.schedule == '35 * * * *' }}  # 35 minutes past every hour
+    steps:
+      - name: echo c
+        run: |
+          echo "c"
