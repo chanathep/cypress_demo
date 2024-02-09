@@ -24,11 +24,15 @@ jobs:
 
       - name: Clone Repository
         # run: git clone --mirror ${{ github.repository }} /tmp/repo
-        run: git clone --mirror https://github.com/${{ github.repository }}.git /tmp/repo
+        run: |
+          mkdir repo
+          cd repo
+          git clone --mirror https://github.com/${{ github.repository }}.git
+          ls -la
 
       - name: Create Zip Archive
         run: |
-          cd /tmp/repo
+          cd repo
           ls -la
           tar -czf ${{ github.event.repository.name }}.tar.gz .
           ls -la
