@@ -29,7 +29,6 @@ jobs:
       - name: Create Zip Archive
         run: |
           cd /tmp/repo
-          cd /tmp/repo
           tar -czf ${{ github.event.repository.name }}.tar.gz .
           ls -la
           # git archive --format=tar.gz --prefix=my-repo/ HEAD > my-repo.tar.gz
