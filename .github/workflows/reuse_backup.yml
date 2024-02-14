@@ -6,9 +6,13 @@ on:
       - main
   workflow_call:
     secrets:
-      PAT_GITHUB:
+      BACKUP_GITHUB_PAT:
         required: true
-      PAT_USER:
+      BACKUP_GITHUB_USER:
+        required: true
+      BACKUP_GITLAB_TOKEN:
+        required: true
+      BACKUP_GITLAB_USER:
         required: true
 
 jobs:
@@ -17,44 +21,83 @@ jobs:
     runs-on: ubuntu-latest
     # runs-on: [self-hosted, linux, x64]
     steps:
-
-      # - name: Clean up old temp folder
-      #   run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork .sonarqube */bin */obj
-
       # - uses: actions/checkout@v4
       #   with:
       #     token: ${{ secrets.TOKEN_KEY }}
       #     submodules: "recursive"
 
-
-      - name: Clone Repository
-        # run: git clone --mirror ${{ github.repository }} /tmp/repo
+      - name: Backup All
         run: |
-          mkdir repo
-          cd repo
-          pwd
-          ls -la
-          git clone --mirror https://${{ secrets.PAT_USER }}:${{ secrets.PAT_GITHUB }}@github.com/${{ github.repository }}.git
-          ls -la
+          current_folder=$(basename "$PWD")
+          echo "start" >../fail_list.txt
+          echo ${{ secrets.BACKUP_GITHUB_USER }}:${{ secrets.BACKUP_GITHUB_PAT }}
+          echo ${{ secrets.BACKUP_GITLAB_USER }}:${{ secrets.BACKUP_GITLAB_TOKEN }}
+          for i in $(cat repo_list.txt); do
+            echo "i: $i"
+            IFS=',' read -r GITHUB_REPO GITLAB_REPO <<< "$i"
+            echo "GITHUB_REPO: $GITHUB_REPO"
+            echo "GITLAB_REPO: $GITLAB_REPO"
+            cd ..
+            echo start
+            # pwd
+            # ls -la
+            rm -rf repo
+            mkdir -p repo
+            cd repo
+            # pwd
+            # ls -la
+            git clone --mirror https://${{ secrets.BACKUP_GITHUB_USER }}:${{ secrets.BACKUP_GITHUB_PAT }}@github.com/${GITHUB_REPO}.git
+            # pwd
+            # ls -la
+            REPO_PATH=$(ls)
+            cd $REPO_PATH
+            echo pushing to gitlab
+            git push  --mirror https://${{ secrets.BACKUP_GITLAB_USER }}:${{ secrets.BACKUP_GITLAB_TOKEN }}@git.freewillgroup.com/${GITLAB_REPO}.git
+            RESULT_GIT_PUSH=$?
+            if [ $RESULT_GIT_PUSH -eq 0 ]; then
+              echo "success for ${GITHUB_REPO}"
+            else
+              echo "fail for ${GITHUB_REPO}"
+              echo "fail for ${GITLAB_REPO}" >>../fail_list.txt
+            fi
+            cd ..
+            cd ..
+            rm -rf repo
+            cd $current_folder
+          done
+          echo "end"
+          echo "FAILED REPORT"
+          cat ../fail_list.txt
+          echo "END REPORT"
 
-      - name: Create tar
-        run: |
-          cd repo
-          pwd
-          ls -la
-          tar -czf ${{ github.event.repository.name }}.tar.gz ${{ github.event.repository.name }}.git
-          ls -la
-          cd ..
-          mkdir repo2
-          cd repo2
-          tar -xzf ../repo/${{ github.event.repository.name }}.tar.gz
-          ls -la
-          mv ${{ github.event.repository.name }}.tar.gz /home/ubuntu/github/${{ github.event.repository.name }}.tar.gz
-          ls -la /home/ubuntu/github
-          # ping -c 1 git.freewillgroup.com
-          # git archive --format=tar.gz --prefix=my-repo/ HEAD > my-repo.tar.gz
-          # gzip -d my-repo.tar.gz
-          # mv my-repo.tar my-repo.zip
+      # - name: Clone Repository
+      #   # run: git clone --mirror ${{ github.repository }} /tmp/repo
+      #   run: |
+      #     mkdir repo
+      #     cd repo
+      #     pwd
+      #     ls -la
+      #     git clone --mirror https://${{ secrets.PAT_USER }}:${{ secrets.PAT_GITHUB }}@github.com/${{ github.repository }}.git
+      #     ls -la
+
+      # - name: Create tar
+      #   run: |
+      #     cd repo
+      #     pwd
+      #     ls -la
+      #     tar -czf ${{ github.event.repository.name }}.tar.gz ${{ github.event.repository.name }}.git
+      #     ls -la
+      #     cd ..
+      #     mkdir repo2
+      #     cd repo2
+      #     tar -xzf ../repo/${{ github.event.repository.name }}.tar.gz
+      #     ls -la
+      #     mv ${{ github.event.repository.name }}.tar.gz /home/ubuntu/github/${{ github.event.repository.name }}.tar.gz
+      #     ls -la /home/ubuntu/github
+      #     # ping -c 1 git.freewillgroup.com
+      #     # git archive --format=tar.gz --prefix=my-repo/ HEAD > my-repo.tar.gz
+      #     # gzip -d my-repo.tar.gz
+      #     # mv my-repo.tar my-repo.zip
 
       # - name: List Zipped File Contents
       #   run: unzip -l /tmp/repo/my-repo.zip
