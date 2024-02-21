@@ -1,0 +1,18 @@
+name: backup
+
+on:
+  push:
+    tags:
+      - 'backup-*'
+  # schedule:
+  #   - cron: '0 16 * * 5' # 23:00 GMT+7 only friday
+
+jobs:
+  backup:
+    name: backup
+    uses: fws-ins-nc/c-ci/.github/workflows/workflow_backup_repo.yml@main
+    secrets:
+      BACKUP_GITHUB_PAT: ${{ secrets.BACKUP_GITHUB_PAT }}
+      BACKUP_GITHUB_USER: ${{ secrets.BACKUP_GITHUB_USER }}
+      BACKUP_GITLAB_TOKEN: ${{ secrets.BACKUP_GITLAB_TOKEN }}
+      BACKUP_GITLAB_USER: ${{ secrets.BACKUP_GITLAB_USER }}
